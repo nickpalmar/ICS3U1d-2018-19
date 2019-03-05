@@ -35,7 +35,7 @@ def on_draw(delta_time):
     draw_snow_person(snow_person1_x, 140)
     draw_snow_person(450, 180)
 
-    # Add one to the x value, making the snow person move right
+    # Add one to the x valuarcade.schedule(on_draw, 1/60)e, making the snow person move right
     # Negative numbers move left. Larger numbers move faster.
     snow_person1_x += 1
 
