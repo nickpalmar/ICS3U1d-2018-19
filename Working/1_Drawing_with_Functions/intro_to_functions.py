@@ -1,25 +1,16 @@
 import arcade
 
+
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-def draw_clouds(cloud_pos_x, cloud_pos_y):
+def draw_clouds(x, y):
     # cloud 1
-    arcade.draw_circle_filled(cloud_pos_x - 20, cloud_pos_y, 30, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(cloud_pos_x, cloud_pos_y, 30, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(cloud_pos_x - 10, cloud_pos_y - 20, 40, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(cloud_pos_x + 50, cloud_pos_y -30, 40, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(cloud_pos_x + 45, cloud_pos_y, 30, arcade.color.WHITE_SMOKE)
-    #
-    # cloud_pos_x += 1
-    # cloud_pos_y += 1
-
-    # cloud 2
-    arcade.draw_circle_filled(320, 390, 30, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(340, 400, 30, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(370, 380, 40, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(400, 370, 40, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(410, 400, 30, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x - 20, y, 30, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x, y, 30, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x - 10, y - 20, 40, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x + 50, y -30, 40, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x + 45, y, 30, arcade.color.WHITE_SMOKE)
 
 def draw_rollinghill():
     # hill 1
@@ -32,56 +23,56 @@ def draw_rollinghill():
 
 
 
-def draw_tree():
+def draw_tree(x, y):
     # tree trunk
-    arcade.draw_lrtb_rectangle_filled(400, 450, 225, 125, arcade.color.BROWN)
+    arcade.draw_lrtb_rectangle_filled(x, x + 50, y, y - 100, arcade.color.BROWN)
 
     # tree leaves
-    arcade.draw_ellipse_filled(410, 255, 45, 35, arcade.color.ANDROID_GREEN)
-    arcade.draw_circle_filled(450, 240, 40, arcade.color.ANDROID_GREEN)
-    arcade.draw_circle_filled(450, 285, 25, arcade.color.ANDROID_GREEN)
-
-#
-# def draw_bird():
-#     arcade.draw()
+    arcade.draw_ellipse_filled(x + 10, y + 10, 45, 35, arcade.color.ANDROID_GREEN)
+    arcade.draw_circle_filled(x + 50, y - 5, 40, arcade.color.ANDROID_GREEN)
+    arcade.draw_circle_filled(x + 50, y + 45, 25, arcade.color.ANDROID_GREEN)
 
 
 
-def main():
-    arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Drawing with Functions")
-    arcade.set_background_color(arcade.color.DARK_BLUE)
+
+def on_draw(delta_time):
+    global cloud1_x
     arcade.start_render()
 
-   # # call your draw functions
-   #  global cloud_pos_x
-   #  global cloud_pos_y
-   #  cloud_pos_x = 50
-   #  cloud_pos_y = 400
-   #  draw_clouds(cloud_pos_x, cloud_pos_y)
 
     draw_rollinghill()
-    draw_tree()
+    draw_tree(120, 200)
+    draw_tree(200, 200)
+    draw_tree(300, 175)
+    draw_tree(425, 150)
+    draw_tree(500, 120)
+    draw_tree(650, 120)
 
 
-    # draw the moving bird
-    # global bird_pos_x
-    # global bird_pos_y
-    #
-    # bird_pos_x = 20
-    # bird_pos_y = 500
-    # draw_bird()
 
-    cloud_pos_x = 50
-    cloud_pos_y = 400
-    draw_clouds(cloud_pos_x, cloud_pos_y)
-    # while True:
-    #     cloud_pos_x += 0.0001
-    #     cloud_pos_y += 0.0001
+    draw_clouds(cloud1_x,  400)
+    # draw_clouds(40, 500)
+    # draw_clouds(200, 350)
+    # draw_clouds(350, 375)
+    # draw_clouds(550, 320)
+    # draw_clouds(650, 300)
+    # draw_clouds(700,400)
+    cloud1_x += 1
+
 
     # Finish and run
     arcade.finish_render()
     arcade.run()
 
+cloud1_x = 50
+
+def main():
+    arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Drawing Functions")
+    arcade.set_background_color(arcade.color.DARK_BLUE)
+
+    # Call on_draw every 60th of a second.
+    arcade.schedule(on_draw, 1/60)
+    arcade.run()
 
 
 
