@@ -57,12 +57,15 @@ def on_draw(delta_time):
     # draw_clouds(550, 320)
     # draw_clouds(650, 300)
     # draw_clouds(700,400)
-    cloud1_x += 1
+    # cloud1_x += 10
+
+    if cloud1_x >= 0 and cloud1_x <= 600:
+        cloud1_x += 10
+    elif cloud1_x <= 600 and cloud1_x >= 0:
+        cloud1_x -= 20
 
 
-    # Finish and run
-    arcade.finish_render()
-    arcade.run()
+
 
 cloud1_x = 50
 
