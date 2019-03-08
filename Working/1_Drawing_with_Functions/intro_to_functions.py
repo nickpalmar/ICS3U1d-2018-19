@@ -1,4 +1,5 @@
 import arcade
+import random
 
 
 SCREEN_WIDTH = 800
@@ -9,7 +10,7 @@ def draw_clouds(x, y):
     arcade.draw_circle_filled(x - 20, y, 30, arcade.color.WHITE_SMOKE)
     arcade.draw_circle_filled(x, y, 30, arcade.color.WHITE_SMOKE)
     arcade.draw_circle_filled(x - 10, y - 20, 40, arcade.color.WHITE_SMOKE)
-    arcade.draw_circle_filled(x + 50, y -30, 40, arcade.color.WHITE_SMOKE)
+    arcade.draw_circle_filled(x + 50, y - 30, 40, arcade.color.WHITE_SMOKE)
     arcade.draw_circle_filled(x + 45, y, 30, arcade.color.WHITE_SMOKE)
 
 def draw_rollinghill():
@@ -37,6 +38,9 @@ def draw_tree(x, y):
 
 def on_draw(delta_time):
     global cloud1_x
+    global speed_x
+    global cloud_width
+    global cloud_y
     arcade.start_render()
 
 
@@ -50,18 +54,23 @@ def on_draw(delta_time):
 
 
 
-    draw_clouds(cloud1_x,  400)
-    # draw_clouds(40, 500)
-    # draw_clouds(200, 350)
-    # draw_clouds(350, 375)
-    # draw_clouds(550, 320)
-    # draw_clouds(650, 300)
-    # draw_clouds(700,400)
-    if cloud1_x >= 0 and cloud1_x <= 540 
+    draw_clouds(cloud1_x + 30, cloud_y)
+    draw_clouds(cloud1_x, cloud_y - 100)
+    draw_clouds(cloud1_x + 120, cloud_y + 155)
+    
+    if cloud1_x < (cloud_width // 2) or cloud1_x > (SCREEN_WIDTH - cloud_width//2):
+        cloud1_x = cloud_width
+        cloud_y = random.randint(300, 500)
+
+    cloud1_x += speed_x
 
 
-cloud_end = False
+
+
 cloud1_x = 50
+speed_x = 10
+cloud_width = 100
+cloud_y = 400
 
 def main():
     arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Drawing Functions")
