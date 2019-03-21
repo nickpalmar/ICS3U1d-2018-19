@@ -13,7 +13,7 @@ Your functions should be defined with the `radius` and `height` parameters(where
 
 
 ### 2) Main program
-Define a main function that tests your volume functions by getting a `radius` and `height` values from user input and outputs volumes for the respective shapes.
+Define a main function that tests your volume functions by getting a `radius` and `height` values from user input and outputs volumes for the respective shapes using the appropriate functions defined in part 1.
 
 Running the program should look like this:
 
