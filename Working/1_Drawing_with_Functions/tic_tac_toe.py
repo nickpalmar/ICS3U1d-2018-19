@@ -1,6 +1,4 @@
 import arcade
-from pyglet import *
-
 
 # creat screen width and heigth values and box (on the board) width and height
 screen_width = 500
@@ -25,8 +23,8 @@ def draw_O(pos_x, pos_y):
     arcade.draw_circle_outline(pos_x, pos_y, half_box_width, arcade.color.BLACK)
 
 
-def on_mouse_press(mouse_x, mouse_y, button, modifiers):
-    arcade.draw_circle_outline(mouse_x, mouse_y, 30, arcade.color.BLACK)
+# def on_mouse_press(mouse_x, mouse_y, button, modifiers):
+#     arcade.draw_circle_outline(mouse_x, mouse_y, 30, arcade.color.BLACK)
 
 
 def on_draw(delta_time):

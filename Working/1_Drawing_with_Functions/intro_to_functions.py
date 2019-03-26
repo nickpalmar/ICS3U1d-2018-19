@@ -53,7 +53,7 @@ def on_draw(delta_time):
     draw_clouds(cloud1_x + 120, cloud_y + 155)
 
     if cloud1_x < (cloud_width // 2) or cloud1_x > (SCREEN_WIDTH - cloud_width // 2):
-        cloud1_x = cloud_width
+        cloud1_x = 0
         cloud_y = random.randint(300, 500)
 
     cloud1_x += speed_x
