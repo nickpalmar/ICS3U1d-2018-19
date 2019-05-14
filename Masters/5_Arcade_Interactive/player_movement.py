@@ -15,7 +15,7 @@ left_pressed = False
 right_pressed = False
 
 
-def update(delta_time):
+def on_update(delta_time):
     global up_pressed, player_y
     if up_pressed:
         player_y += 5
@@ -47,7 +47,7 @@ def on_mouse_press(x, y, button, modifiers):
 def setup():
     arcade.open_window(WIDTH, HEIGHT, "My Arcade Game")
     arcade.set_background_color(arcade.color.WHITE)
-    arcade.schedule(update, 1/60)
+    arcade.schedule(on_update, 1/60)
 
     # Override arcade window methods
     window = arcade.get_window()
