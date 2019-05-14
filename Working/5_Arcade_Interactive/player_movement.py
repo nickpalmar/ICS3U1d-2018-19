@@ -21,40 +21,38 @@ speed_y2 = -5
 speed_x1 = -5
 speed_x2 = 5
 
+
 def on_update(delta_time):
     global up_pressed, player_y, speed_y1, player_x, left_pressed, speed_y2, speed_x1, speed_x2, right_pressed
     if up_pressed:
         player_y += speed_y1
-    if player_y > HEIGHT - 30:
+    if player_y > HEIGHT - 25:
         speed_y1 = 0
     else:
         speed_y1 = 10
 
     if down_pressed:
         player_y += speed_y2
-    if player_y < 30:
+    if player_y < 25:
         speed_y2 = 0
     else:
         speed_y2 = -10
 
     if left_pressed:
         player_x += speed_x1
-    if player_x < 30:
+    if player_x < 25:
         speed_x1 = 0
     else:
         speed_x1 = -10
 
     if right_pressed:
         player_x += speed_x2
-    if player_x > WIDTH - 30:
+    if player_x > WIDTH - 25:
         speed_x2 = 0
     else:
         speed_x2 = 10
 
     arcade.draw_circle_filled(player_x, player_y, 25, arcade.color.BLUE)
-
-
-
 
 
 def on_draw():
@@ -74,7 +72,6 @@ def on_key_press(key, modifiers):
         left_pressed = True
     if key == arcade.key.D:
         right_pressed = True
-
 
 
 def on_key_release(key, modifiers):

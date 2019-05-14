@@ -40,8 +40,7 @@ def on_mouse_press(x, y, button, modifiers):
     my_button_x, my_button_y, my_button_w, my_button_h = my_button
 
     # Need to check all four limits of the button.
-    if (x > my_button_x and x < my_button_x + my_button_w and
-            y > my_button_y and y < my_button_y + my_button_h):
+    if x > my_button_x and x < my_button_x + my_button_w and y > my_button_y and y < my_button_y + my_button_h:
         print("Clicked!!!")
     else:
         print("not clicked")

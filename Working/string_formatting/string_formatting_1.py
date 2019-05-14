@@ -39,7 +39,7 @@ print("{0:>16} {1:>22} {2:>15}".format("Litres Used","Distance Travelled", "Hell
 
 for litres in range(0,litres_max,10):
     distance = (100*litres)/fuel_efficiency
-    print("{0:>15}L {01:>20.2f}km {2:>15}".format(litres,distance, "hello"))
+    print("{0:>15.2f}L {01:>20.2f}km {2:>15}".format(litres,distance, "hello"))
 
 
 
