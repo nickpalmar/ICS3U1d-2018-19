@@ -7,7 +7,7 @@ HEIGHT = 480
 
 # start player position in middle of window
 player_x = WIDTH/2
-player_y = HEIGHT/2
+player_y = HEIGHT/2 + 50
 player_rad = 30
 
 # Variables to record if certain keys are being pressed.
