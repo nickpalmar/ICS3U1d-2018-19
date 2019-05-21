@@ -23,11 +23,11 @@ pac_speed_y = 0
 time = 0
 
 # maze/wall variables
-perim_walls = []
-wall_dimension = 40
-wall_rows = 15
-wall_columns = 15
-perim_wall_pos = []
+perim_wall_pos1 = 300
+perim_wall_pos2 = 20
+perim_wall_width = 600
+perim_wall_height = 40
+current_wall_distance = []
 
 
 def on_update(delta_time):
@@ -46,17 +46,33 @@ def on_update(delta_time):
 
 
 def pac_move():
-    global final_arc_angle, time, pacman_character, perim_walls, wall_dimension, wall_rows, wall_columns, perim_wall_pos
-    global up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y, pac_rad, pac_speed_x, init_arc_angle
-    global pac_speed_y
+    global final_arc_angle, time, pacman_character, up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y, pac_rad, pac_speed_x, init_arc_angle
+    global pac_speed_y, perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height, current_wall_distance
     # check if pacman is in contact with perimeter walls
     pac_stop = False
-    for i in range(len(perim_wall_pos)):
-        # calculate distance from pacman to wall, it touching make him stop moving
-        pac_to_perim = ((perim_wall_pos[i][0] - pac_x) ** 2 + (perim_wall_pos[i][1] - pac_y) ** 2) ** (1 / 2)
-        if pac_to_perim <= ((wall_dimension // 2) + pac_rad):
-            pac_stop = True
-            current_wall_distance = pac_to_perim
+    # calculate distance from pacman to base wall, it touching make him stop moving
+    d_to_base = pac_y - (perim_wall_pos2 + perim_wall_width//2 + pac_rad)
+    d_to_left = pac_x - (perim_wall_pos2 + perim_wall_width//2 + pac_rad)
+    d_to_right = (perim_wall_pos1 - perim_wall_width//2 - pac_rad) - pac_x
+    d_to_top = (perim_wall_pos1 - perim_wall_width//2 - pac_rad) - pac_y
+
+    # set the pacman distance
+    current_wall_distance = [0]*4
+    current_wall_distance[0] = d_to_base
+    current_wall_distance[1] = d_to_left
+    current_wall_distance[2] = d_to_right
+    current_wall_distance[3] = d_to_top
+
+    # check if pacman in contact with wall
+    if d_to_base <= pac_rad:
+        pac_stop = True
+    elif d_to_top <= pac_rad:
+        pac_stop = True
+
+    if d_to_left <= pac_rad:
+        pac_stop = True
+    elif d_to_right <= pac_rad:
+        pac_stop = True
 
     # set pac speeds depending on keys pressed
     if up_pressed:
@@ -68,11 +84,10 @@ def pac_move():
     elif right_pressed:
         pac_speed_x = 5
 
-    # check if player motion can move pacman away from tbe wall
+    # check if player motion can move pacman away from the wall while in contact
     if pac_stop:
-        if (pac_speed_x + current_wall_distance >= wall_dimension // 2 + pac_rad) or (
-                pac_speed_y + current_wall_distance >= wall_dimension // 2 + pac_rad):
-            pac_stop = False
+        for i in range(len(current_wall_distance)):
+            if current_wall_distance[i] + pac_speed_y >= pac_rad or
     # if in contact, stop him
     if pac_stop == False:
         # check if any keys are pressed and move pacman accordingly
@@ -106,9 +121,17 @@ def pac_move():
 
 def on_draw():
     global pac_x, pac_y, pacman_character, perim_walls, wall_dimension, WIDTH, HEIGHT
+    global perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height
     arcade.start_render()
 
-    draw_perim_walls()
+    # base wall
+    draw_perim_walls(perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height)
+    # left_wall
+    draw_perim_walls(perim_wall_pos2, perim_wall_pos1, perim_wall_height, perim_wall_width)
+    #top wall
+    draw_perim_walls(perim_wall_pos1, HEIGHT - perim_wall_pos2, perim_wall_width, perim_wall_height)
+    # right wall
+    draw_perim_walls(WIDTH - perim_wall_pos2, perim_wall_pos1, perim_wall_height, perim_wall_width)
 
     # Draw pacman, alternating
     if pacman_character == 1:
@@ -117,25 +140,10 @@ def on_draw():
         draw_pacman_closed(pac_x, pac_y)
 
 
-def draw_perim_walls():
-    global WIDTH, wall_dimension, perim_walls, HEIGHT, wall_rows, wall_columns, perim_wall_pos
-    for r in range(wall_rows):
-        for c in range(wall_columns):
-            if (r == 0 or c == 0 or r == 14 or c == 14) and r != 7:
-                perim_walls[r][c] = 1
-            else:
-                perim_walls[r][c] = 0
-    # draw the perimeter perim_walls
-    for row in range(wall_rows):
-        for column in range(wall_columns):
-            if perim_walls[row][column] == 1:
-                colour = arcade.color.BLUE
-                # find wall x and y pos
-                wall_x = column * 40 + wall_dimension / 2
-                wall_y = row * 40 + wall_dimension / 2
-                perim_wall_pos.append([wall_x, wall_y])
-                # draw perim_walls and maze
-                arcade.draw_rectangle_filled(wall_x, wall_y, wall_dimension, wall_dimension, colour)
+def draw_perim_walls(perim_wall_basex, perim_wall_basey, width, height):
+    # draw a peremiter wall
+    arcade.draw_rectangle_filled(perim_wall_basex, perim_wall_basey, width, height, arcade.color.BLUE)
+
 
 
 def draw_pacman_closed(x, y):
@@ -189,11 +197,6 @@ def setup():
     window.on_draw = on_draw
     window.on_key_press = on_key_press
 
-    # create an list for the perim_walls
-    for row in range(wall_rows):
-        perim_walls.append([])
-        for column in range(wall_columns):
-            perim_walls[row].append(0)
     arcade.run()
 
 
