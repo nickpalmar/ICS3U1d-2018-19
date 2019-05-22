@@ -10,6 +10,9 @@ pac_y = 200
 pac_rad = 20
 init_arc_angle = 0
 final_arc_angle = 360
+# is pacman in contact with perimeter walls, can pacman move U,D,L,R
+pac_stop = False
+pac_poss_motion = [True]*4
 # pacman as a circle (0) or arc(1)
 pacman_character = 1
 
@@ -34,6 +37,7 @@ def on_update(delta_time):
     global pacman_character, time
 
     pac_move()
+    pac_stop_perim()
 
     # change pacman's outfit (open mouth to closed mouth and vice versa)
     time += delta_time
@@ -48,32 +52,17 @@ def on_update(delta_time):
 def pac_move():
     global final_arc_angle, time, pacman_character, up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y, pac_rad, pac_speed_x, init_arc_angle
     global pac_speed_y, perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height, current_wall_distance
-    # check if pacman is in contact with perimeter walls
-    pac_stop = False
-    # calculate distance from pacman to base wall, it touching make him stop moving
-    d_to_base = pac_y - (perim_wall_pos2 + perim_wall_width//2 + pac_rad)
-    d_to_left = pac_x - (perim_wall_pos2 + perim_wall_width//2 + pac_rad)
-    d_to_right = (perim_wall_pos1 - perim_wall_width//2 - pac_rad) - pac_x
-    d_to_top = (perim_wall_pos1 - perim_wall_width//2 - pac_rad) - pac_y
-
-    # set the pacman distance
-    current_wall_distance = [0]*4
-    current_wall_distance[0] = d_to_base
-    current_wall_distance[1] = d_to_left
-    current_wall_distance[2] = d_to_right
-    current_wall_distance[3] = d_to_top
-
-    # check if pacman in contact with wall
-    if d_to_base <= pac_rad:
-        pac_stop = True
-    elif d_to_top <= pac_rad:
-        pac_stop = True
-
-    if d_to_left <= pac_rad:
-        pac_stop = True
-    elif d_to_right <= pac_rad:
-        pac_stop = True
-
+    global WIDTH, HEIGHT, pac_stop, pac_poss_motion
+    # check if player motion can move pacman away from the wall while in contact
+    # if pac_stop:
+    #     # check if pacman can move up
+    #     if (current_wall_distance[0] + pac_speed_y ) > (pac_rad + perim_wall_height//2):
+    #         pac_stop = False
+    #     # check if pacman can move up
+    #     elif current_wall_distance[1] > pac_y:
+    #         pac_stop = False
+    # print(current_wall_distance[0] + pac_speed_y)
+    # if in contact, stop him
     # set pac speeds depending on keys pressed
     if up_pressed:
         pac_speed_y = 5
@@ -84,39 +73,72 @@ def pac_move():
     elif right_pressed:
         pac_speed_x = 5
 
-    # check if player motion can move pacman away from the wall while in contact
-    if pac_stop:
-        for i in range(len(current_wall_distance)):
-            if current_wall_distance[i] + pac_speed_y >= pac_rad or
-    # if in contact, stop him
     if pac_stop == False:
-        # check if any keys are pressed and move pacman accordingly
-        if up_pressed or down_pressed:
-            if up_pressed:
-                init_arc_angle = 135
-                final_arc_angle = 405
-            elif down_pressed:
-                init_arc_angle = 315
-                final_arc_angle = 585
-            pac_speed_x = 0
-        elif left_pressed or right_pressed:
-            if left_pressed:
-                init_arc_angle = 225
-                final_arc_angle = 495
-            elif right_pressed:
-                init_arc_angle = 45
-                final_arc_angle = 315
-            pac_speed_y = 0
+    # check if any keys are pressed and move pacman accordingly
+        if up_pressed:
+            pac_speed_y = 5
+            init_arc_angle = 135
+            final_arc_angle = 405
+        elif down_pressed:
+            pac_speed_y = -5
+            init_arc_angle = 315
+            final_arc_angle = 585
+        if left_pressed:
+            pac_speed_x = -5
+            init_arc_angle = 225
+            final_arc_angle = 495
+        elif right_pressed:
+            pac_speed_x = 5
+            init_arc_angle = 45
+            final_arc_angle = 315
 
         # move pacman
         pac_x += pac_speed_x
         pac_y += pac_speed_y
     else:
-        if up_pressed or down_pressed:
-            pac_speed_y = 0
-        elif left_pressed or right_pressed:
-            pac_speed_x = 0
-    print(pac_speed_x, pac_speed_y)
+        # do not allow pacman to move past walls
+        if pac_poss_motion[0] == False:
+            if pac_speed_y > 0:
+                pac_speed_y = 0
+
+def pac_stop_perim():
+    global final_arc_angle, time, pacman_character, up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y, pac_rad, pac_speed_x, init_arc_angle
+    global pac_speed_y, perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height, current_wall_distance
+    global WIDTH, HEIGHT, pac_stop, pac_poss_motion
+    # calculate distance from pacman to base wall, it touching make him stop moving
+    d_to_base = pac_y - (perim_wall_pos2 + perim_wall_height // 2 - pac_rad)
+    d_to_left = pac_x - (perim_wall_pos2 + perim_wall_height // 2 - pac_rad)
+    d_to_right = (perim_wall_pos1 + perim_wall_width // 2 - pac_rad) - pac_x
+    d_to_top = (perim_wall_pos1 + perim_wall_width // 2 - pac_rad) - pac_y
+
+    # set the pacman distance
+    current_wall_distance = [0] * 4
+    current_wall_distance[0] = d_to_base
+    current_wall_distance[1] = d_to_left
+    current_wall_distance[2] = d_to_right
+    current_wall_distance[3] = d_to_top
+
+    # check if pacman in contact with wall
+    if d_to_base <= pac_rad + perim_wall_height // 2:
+        pac_stop = True
+        pac_poss_motion[1] = False
+    elif d_to_top <= pac_rad + perim_wall_height // 2:
+        pac_stop = True
+        pac_poss_motion[0] = False
+    if d_to_left <= pac_rad + perim_wall_height // 2:
+        pac_stop = True
+        pac_poss_motion[2] = False
+    elif d_to_right <= pac_rad + perim_wall_height // 2:
+        pac_stop = True
+        pac_poss_motion[3] = False
+    # if pac_stop:
+    #     # check if pacman can move up
+    #     if (current_wall_distance[0] + pac_speed_y ) > (pac_rad + perim_wall_height//2):
+    #         pac_stop = False
+    #     # check if pacman can move up
+    #     elif current_wall_distance[1] > pac_y:
+    #         pac_stop = False
+    # print(current_wall_distance[0] + pac_speed_y)
 
 
 def on_draw():
