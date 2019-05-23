@@ -36,8 +36,9 @@ current_wall_distance = []
 def on_update(delta_time):
     global pacman_character, time, pac_stop
 
-    pac_move()
-    pac_stop_perim()
+    wall_outer_side = pac_stop_perim()
+
+    pac_move(wall_outerside)
 
     # change pacman's outfit (open mouth to closed mouth and vice versa)
     time += delta_time
@@ -120,6 +121,7 @@ def pac_move():
     pac_y += pac_speed_y
 
 
+
 def pac_stop_perim():
     global final_arc_angle, time, pacman_character, up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y, pac_rad, pac_speed_x, init_arc_angle
     global pac_speed_y, perim_wall_pos1, perim_wall_pos2, perim_wall_width, perim_wall_height, current_wall_distance
@@ -140,8 +142,10 @@ def pac_stop_perim():
     # reset variables
     # pac_poss_motion = [True]*4
     pac_stop = [False]*4
+    # set the index at 4; not touching
+    current_wall_index = 4
 
-    # check if pacman in contact with wall
+    # check if pacman in contact with wall, and store the wall
     if d_to_base <= pac_rad + perim_wall_height // 2:
         pac_stop[0] = True
     elif d_to_top <= pac_rad + perim_wall_height // 2:
@@ -150,6 +154,12 @@ def pac_stop_perim():
         pac_stop[2] = True
     elif d_to_right <= pac_rad + perim_wall_height // 2:
         pac_stop[3] = True
+
+    for
+
+    # if touching, return values
+    return pac_stop[current_wall_index]
+
 
 
 def on_draw():
