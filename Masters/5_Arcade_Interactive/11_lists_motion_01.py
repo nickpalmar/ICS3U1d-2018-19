@@ -40,8 +40,11 @@ def on_draw():
 
     # zip() pairs up values from multiple lists for we can
     # iterate through multiple lists at once
-    for x, y in zip(rain_x_positions, rain_y_positions):
-        arcade.draw_circle_filled(x, y, 25, arcade.color.BLUE)
+    #for x, y in zip(rain_x_positions, rain_y_positions):
+    #    arcade.draw_circle_filled(x, y, 25, arcade.color.BLUE)
+
+    for i in range(len(rain_x_positions)):
+        arcade.draw_circle_filled(rain_x_positions[i], rain_y_positions[i], 25, arcade.color.BLUE)
 
 
 def on_key_press(key, modifiers):
