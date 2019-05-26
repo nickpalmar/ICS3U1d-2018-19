@@ -1,8 +1,7 @@
 import arcade
 
-
 WIDTH = 1240
-HEIGHT = 600
+HEIGHT = 680
 
 # tile dimension; wall fits to tile
 tile_width = 40
@@ -22,17 +21,42 @@ pac_y = 60
 pac_rad = 20
 init_arc_angle = 0
 final_arc_angle = 360
+pac_skin = 0
+
+# arrow key variables
+up_pressed = False
+down_pressed = False
+left_pressed = False
+right_pressed = False
+pac_speed_x = 0
+pac_speed_y = 0
+
+# time variable
+time = 0
+
+#  score variables
+score = 0
+
 
 def on_update(delta_time):
-    pass
+    global pac_x, pac_y, time, pac_speed_x, pac_speed_y
+    wall_touch = wall_collision(pac_x, pac_y)
+    pac_move(wall_touch)
+    pac_object_detection(pac_x, pac_y)
+
+    # open and close pac mans mouth
+    time += delta_time
+    if time >= 0.075:
+        change_skin()
+        time = 0
 
 
 def on_draw():
-    global pac_grid, row_count, column_count, tile_width, tile_height
+    global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
     arcade.start_render()
     # draw out the current grid
     for row in range(8):
-        for column in range(10):
+        for column in range(9):
             # calculate tile position
             tile_centre_x = (column+1)*tile_width - 20
             tile_centre_y = (row+1)*tile_height - 20
@@ -42,22 +66,213 @@ def on_draw():
             # check if pellet
             elif pac_grid[row][column] == 1:
                 draw_pellet(tile_centre_x, tile_centre_y)
+            # elif pac_grid[row][column] == 2:
+            #     print("draw nothing")
+
+    # draw pacman
+    draw_pac(pac_x, pac_y)
+
+    # draw the score
+    write_score(score)
+
+
+def write_score(score):
+    arcade.draw_text(str(score), 40, 640, arcade.color.WHITE, 40)
+
+
+def change_skin():
+    # change pacman from open to close mouth
+    global pac_skin
+    if pac_skin == 1:
+        pac_skin = 0
+    else:
+        pac_skin = 1
+
+
+def draw_pac(x, y):
+    global pac_skin
+    # open mouth
+    if pac_skin == 0:
+        draw_pacman_open(x, y)
+    # close mouth
+    else:
+        draw_pacman_closed(x, y)
+
+
+def wall_collision(x, y):
+    global tile_height, tile_width, pac_rad, pac_grid, row_count, column_count
+    # check if pacman is in the middle of a tile
+    if x <= 600:
+        check_x = (x + (tile_width//2)) % tile_width
+    else:
+        check_x = (x - (tile_width//2)) % tile_width
+
+    if y <= 300:
+        check_y = (y + (tile_width // 2)) % tile_width
+    else:
+        check_y = (y - (tile_width // 2)) % tile_width
+
+    # in the middle of a tile
+    if check_x == 0 and check_y == 0:
+        # calculate pacman tile
+        pac_column  = int(((x + 20) // 40) - 1)
+        pac_row = int(((y + 20) // 40) - 1)
+
+        # calculte rows and columns adjectent to pacman
+        row_above = pac_row + 1
+        row_below = pac_row - 1
+        column_left = pac_column - 1
+        column_right = pac_column + 1
+
+        wall_touch = []
+
+        # check if adjacent tiles are walls or not
+        if pac_grid[row_above][pac_column] == 0:
+            wall_touch.append("up")
+        if pac_grid[row_below][pac_column] == 0:
+            wall_touch.append("down")
+        if pac_grid[pac_row][column_left] == 0:
+            wall_touch.append("left")
+        if pac_grid[pac_row][column_right] == 0:
+            wall_touch.append("right")
+
+        return wall_touch
+
+    # not in mid tile
+    else:
+        return "null"
+
+
+def pac_move(wall_touch):
+    global pac_speed_x, pac_speed_y, up_pressed, down_pressed, left_pressed, right_pressed, pac_x, pac_y
+    global init_arc_angle, final_arc_angle
+
+    # check if mid-tile, check wall collision
+    if wall_touch != "null":
+        # pacman motion depending on key pressed
+        if up_pressed:
+            pac_speed_y = 5
+            pac_speed_x = 0
+            init_arc_angle = 135
+            final_arc_angle = 405
+        elif down_pressed:
+            pac_speed_y = -5
+            pac_speed_x = 0
+            init_arc_angle = 315
+            final_arc_angle = 585
+        elif left_pressed:
+            pac_speed_x = -5
+            pac_speed_y = 0
+            init_arc_angle = 225
+            final_arc_angle = 495
+        elif right_pressed:
+            pac_speed_x = 5
+            pac_speed_y = 0
+            init_arc_angle = 45
+            final_arc_angle = 315
+
+        # loop through the walls that are touching, restrict motion in certain directions
+        for wall in wall_touch:
+            # restrict up motion
+            if wall == "up" and pac_speed_y > 0:
+                pac_speed_y = 0
+                init_arc_angle = 0
+                final_arc_angle = 360
+            # restrict down motion
+            if wall == "down" and pac_speed_y < 0:
+                pac_speed_y = 0
+                init_arc_angle = 0
+                final_arc_angle = 360
+            # restict left motion
+            if wall == "left" and pac_speed_x < 0:
+                pac_speed_x = 0
+                init_arc_angle = 0
+                final_arc_angle = 360
+            # restrict right motion
+            if wall == "right" and pac_speed_x > 0:
+                pac_speed_x = 0
+                init_arc_angle = 0
+                final_arc_angle = 360
+
+    # move pacman
+    pac_x += pac_speed_x
+    pac_y += pac_speed_y
+
+
+def pac_object_detection(x, y):
+    global tile_height, tile_width, pac_rad, pac_grid, row_count, column_count, score
+    # check if pacman is in the middle of a tile
+    if x <= 600:
+        check_x = (x + (tile_width // 2)) % tile_width
+    else:
+        check_x = (x - (tile_width // 2)) % tile_width
+
+    if y <= 300:
+        check_y = (y + (tile_width // 2)) % tile_width
+    else:
+        check_y = (y - (tile_width // 2)) % tile_width
+
+    # in the middle of a tile
+    if check_x == 0 and check_y == 0:
+        # calculate pacman tile
+        pac_column = int(((x + 20) // 40) - 1)
+        pac_row = int(((y + 20) // 40) - 1)
+
+        # check if pacman is on a pellet
+        if pac_grid[pac_row][pac_column] == 1:
+            # change status to nothing
+            pac_grid[pac_row][pac_column] = 2
+            score += 10
 
 
 def draw_wall_tile(x, y):
     global tile_height, tile_width
     arcade.draw_rectangle_filled(x, y, tile_width, tile_height, arcade.color.BLUE)
 
+
+def draw_pacman_closed(x, y):
+    global pac_rad
+    arcade.draw_circle_filled(x, y, pac_rad, arcade.color.YELLOW)
+
+
 def draw_pacman_open(x, y):
     global pac_rad, init_arc_angle, final_arc_angle
     arcade.draw_arc_filled(x, y, pac_rad, pac_rad, arcade.color.YELLOW, init_arc_angle, final_arc_angle)
+
 
 def draw_pellet(x, y):
     global pellet_rad
     arcade.draw_circle_filled(x, y, pellet_rad, arcade.color.ORANGE_PEEL)
 
+
 def on_key_press(key, modifiers):
-    pass
+    global up_pressed, down_pressed, left_pressed, right_pressed
+    # create a key list
+    key_pressed_list = [0] * 4
+
+    # check if any key is pressed, if it is set that direction to true (move in 1 direction)
+    if key == arcade.key.UP:
+        up_pressed = True
+        key_pressed_list[0] = 1
+    elif key == arcade.key.DOWN:
+        down_pressed = True
+        key_pressed_list[1] = 1
+    elif key == arcade.key.LEFT:
+        left_pressed = True
+        key_pressed_list[2] = 1
+    elif key == arcade.key.RIGHT:
+        right_pressed = True
+        key_pressed_list[3] = 1
+    key_pressed_boolean = [up_pressed, down_pressed, left_pressed, right_pressed]
+
+    # turn off all keys which are not pressed, account for no on key released
+    for i in range(len(key_pressed_list)):
+        if key_pressed_list[i] == 0:
+            key_pressed_boolean[i] = False
+    up_pressed = key_pressed_boolean[0]
+    down_pressed = key_pressed_boolean[1]
+    left_pressed = key_pressed_boolean[2]
+    right_pressed = key_pressed_boolean[3]
 
 
 def on_key_release(key, modifiers):
@@ -71,7 +286,7 @@ def on_mouse_press(x, y, button, modifiers):
 def setup():
     global pac_grid, row_count, column_count
     arcade.open_window(WIDTH, HEIGHT, "My Arcade Game")
-    arcade.set_background_color(arcade.color.WHITE)
+    arcade.set_background_color(arcade.color.BLACK)
     arcade.schedule(on_update, 1/60)
 
     # Override arcade window methods
@@ -87,16 +302,22 @@ def setup():
         pac_grid.append([])
         for column in range(column_count):
             # if on the outside, make tile a wall
-            if row == 0 or column == 0 or row == 14 or column == 30:
+            if row == 0 or column == 0:
                 pac_grid[row].append(0)
-            # make tile a pellet
-            elif column % 2 != 0 or row == 1 or row == 13:
-                pac_grid[row].append(1)
             # make a vertical wall
-            elif ((row >= 2 and row <= 5) and column == 2) or ((row >= 2 and row <= 5) and column == 8):
+            elif (2 <= row <= 5) and column == 2:
                 pac_grid[row].append(0)
-    arcade.run()
+            elif 4 <= column <= 7 and row == 2:
+                pac_grid[row].append(0)
+            elif 2 <= column <= 8 and row == 7:
+                pac_grid[row].append(0)
 
+            elif (column == 4 or 6 <= column <= 7) and (4 <= row <= 5):
+                pac_grid[row].append(0)
+            elif (1 <= column <= 8) and (1 <= row <= 7):
+                pac_grid[row].append(1)
+
+    arcade.run()
 
 if __name__ == '__main__':
     setup()
