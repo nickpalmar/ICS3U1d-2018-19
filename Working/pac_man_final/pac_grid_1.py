@@ -53,19 +53,19 @@ def on_update(delta_time):
 
 def on_draw():
     global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
-    arcade.start_render()
-    # draw out the current grid
-    for row in range(8):
-        for column in range(9):
-            # calculate tile position
-            tile_centre_x = (column+1)*tile_width - 20
-            tile_centre_y = (row+1)*tile_height - 20
-            # check if wall
-            if pac_grid[row][column] == 0:
-                draw_wall_tile(tile_centre_x, tile_centre_y)
-            # check if pellet
-            elif pac_grid[row][column] == 1:
-                draw_pellet(tile_centre_x, tile_centre_y)
+    # arcade.start_render()
+    # # draw out the current grid
+    # for row in range(row_count):
+    #     for column in range(column_count):
+    #         # calculate tile position
+    #         tile_centre_x = (column+1)*tile_width - 20
+    #         tile_centre_y = (row+1)*tile_height - 20
+    #         # check if wall
+    #         if pac_grid[row][column] == 0:
+    #             draw_wall_tile(tile_centre_x, tile_centre_y)
+    #         # check if pellet
+    #         elif pac_grid[row][column] == 1:
+    #             draw_pellet(tile_centre_x, tile_centre_y)
             # elif pac_grid[row][column] == 2:
             #     print("draw nothing")
 
@@ -227,7 +227,10 @@ def pac_object_detection(x, y):
 
 def draw_wall_tile(x, y):
     global tile_height, tile_width
-    arcade.draw_rectangle_filled(x, y, tile_width, tile_height, arcade.color.BLUE)
+    # arcade.draw_rectangle_filled(x, y, tile_width, tile_height, arcade.color.BLUE)
+    texture = arcade.load_texture("pacific-blue-high-sheen-merola-tile-mosaic-tile-fyfl1spa-64_1000.jpg")
+    # display fire image on screen
+    arcade.draw_texture_rectangle(x, y, tile_width, tile_height, texture, 0)
 
 
 def draw_pacman_closed(x, y):
@@ -285,6 +288,7 @@ def on_mouse_press(x, y, button, modifiers):
 
 def setup():
     global pac_grid, row_count, column_count
+    global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
     arcade.open_window(WIDTH, HEIGHT, "My Arcade Game")
     arcade.set_background_color(arcade.color.BLACK)
     arcade.schedule(on_update, 1/60)
@@ -302,20 +306,77 @@ def setup():
         pac_grid.append([])
         for column in range(column_count):
             # if on the outside, make tile a wall
-            if row == 0 or column == 0:
+            if row == 0 or column == 0 or row == 14 or column == 30:
                 pac_grid[row].append(0)
-            # make a vertical wall
-            elif (2 <= row <= 5) and column == 2:
+            # draw wall tiles from column to column
+            elif (2 <= row <= 5 or row == 7 or 9 <= row <= 12) and column == 2:
                 pac_grid[row].append(0)
-            elif 4 <= column <= 7 and row == 2:
+            elif row == 7 and column == 3:
                 pac_grid[row].append(0)
-            elif 2 <= column <= 8 and row == 7:
+            elif (row == 2 or 4 <= row <= 5 or row == 7 or 9 <= row <= 10 or row == 12) and column == 4:
+                pac_grid[row].append(0)
+            elif (row == 2 or 9 <= row <= 10 or row == 12) and column == 5:
+                pac_grid[row].append(0)
+            elif (row == 2 or 4 <= row <= 5 or row == 7) and column == 6:
+                pac_grid[row].append(0)
+            elif (row == 2 or 4 <= row <= 5 or row == 7 or row == 9 or row == 12) and column == 7:
+                pac_grid[row].append(0)
+            elif (row == 7 or 11 <= row <= 12) and column == 8:
+                pac_grid[row].append(0)
+            elif (row == 1 or 3 <= row <= 5 or 10 <= row <= 11) and column == 9:
+                pac_grid[row].append(0)
+            elif (row == 7 or row == 10 or row == 13) and column == 10:
+                pac_grid[row].append(0)
+            elif (2 <= row <= 3 or 6 <= row <= 8 or row == 10) and column == 11:
+                pac_grid[row].append(0)
+            elif (row == 3 or 5 <= row <= 9 or row == 11 or row == 13) and column == 13:
+                pac_grid[row].append(0)
+            elif (2 <= row <= 3 or row == 5 or row == 9 or row == 11) and column == 14:
+                pac_grid[row].append(0)
+            elif (2 <= row <= 3 or row == 5 or row == 9 or 11 <= row <= 12) and column == 15:
+                pac_grid[row].append(0)
+            elif (row == 3 or row == 5 or row == 9 or 11 <= row <= 12) and column == 16:
+                pac_grid[row].append(0)
+            elif (row == 1 or row == 3 or 5 <= row <= 9 or row == 11) and column == 17:
+                pac_grid[row].append(0)
+            elif (row == 4 or 6 <= row <= 8 or 11 <= row <= 12) and column == 19:
+                pac_grid[row].append(0)
+            elif (row == 1 or row == 4 or row == 7) and column == 20:
+                pac_grid[row].append(0)
+            elif (3 <= row <= 4 or 9 <= row <= 10 or row == 13) and column == 21:
+                pac_grid[row].append(0)
+            elif (2 <= row <= 3 or row == 7) and column == 22:
+                pac_grid[row].append(0)
+            elif (row == 2 or row == 5 or row == 7 or 9 <= row <= 10 or row == 12) and column == 23:
+                pac_grid[row].append(0)
+            elif (row == 7 or 9 <= row <= 10 or row == 12) and column == 24:
+                pac_grid[row].append(0)
+            elif (row == 2 or 4 <= row <= 5 or row == 12) and column == 25:
+                pac_grid[row].append(0)
+            elif (row == 2 or 4 <= row <= 5 or row == 7 or 9 <= row <= 10 or row == 12) and column == 26:
+                pac_grid[row].append(0)
+            elif row == 7 and column == 27:
+                pac_grid[row].append(0)
+            elif (2 <= row <= 5 or row == 7 or 9 <= row <= 12) and column == 28:
                 pac_grid[row].append(0)
 
-            elif (column == 4 or 6 <= column <= 7) and (4 <= row <= 5):
-                pac_grid[row].append(0)
-            elif (1 <= column <= 8) and (1 <= row <= 7):
+             # if not a wall tile, pellet tile
+            elif (1 <= column <= 29) and (1 <= row <= 13):
                 pac_grid[row].append(1)
+
+    # draw out the current grid
+    arcade.start_render()
+    for row in range(row_count):
+        for column in range(column_count):
+            # calculate tile position
+            tile_centre_x = (column + 1) * tile_width - 20
+            tile_centre_y = (row + 1) * tile_height - 20
+            # check if wall
+            if pac_grid[row][column] == 0:
+                draw_wall_tile(tile_centre_x, tile_centre_y)
+            # check if pellet
+            elif pac_grid[row][column] == 1:
+                draw_pellet(tile_centre_x, tile_centre_y)
 
     arcade.run()
 
