@@ -8,12 +8,14 @@ tile_width = 40
 tile_height = 40
 
 # pellet dimension
-pellet_rad = 5
+pellet_rad = 10
 
 # create grid variables
 pac_grid = []
 row_count = 15
 column_count = 31
+grid_draw = 0
+
 
 # pacman variables
 pac_x = 60
@@ -37,9 +39,6 @@ time = 0
 #  score variables
 score = 0
 
-# wall image
-texture = arcade.load_texture("pacific-blue-high-sheen-merola-tile-mosaic-tile-fyfl1spa-64_1000.jpg")
-
 
 def on_update(delta_time):
     global pac_x, pac_y, time, pac_speed_x, pac_speed_y
@@ -57,8 +56,19 @@ def on_update(delta_time):
 def on_draw():
     global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
 
-    # draw out the current grid
+
     arcade.start_render()
+    draw_maze()
+
+    # draw pacman
+    draw_pac(pac_x, pac_y)
+
+    # draw the score
+    write_score(score)
+
+def draw_maze():
+    global tile_width, tile_height, pac_grid, grid_draw, time
+    # draw out the current grid
     for row in range(row_count):
         for column in range(column_count):
             # calculate tile position
@@ -70,12 +80,6 @@ def on_draw():
             # check if pellet
             elif pac_grid[row][column] == 1:
                 draw_pellet(tile_centre_x, tile_centre_y)
-
-    # draw pacman
-    draw_pac(pac_x, pac_y)
-
-    # draw the score
-    write_score(score)
 
 
 def write_score(score):
@@ -153,22 +157,22 @@ def pac_move(wall_touch):
     if wall_touch != "null":
         # pacman motion depending on key pressed
         if up_pressed:
-            pac_speed_y = 5
+            pac_speed_y = 10
             pac_speed_x = 0
             init_arc_angle = 135
             final_arc_angle = 405
         elif down_pressed:
-            pac_speed_y = -5
+            pac_speed_y = -10
             pac_speed_x = 0
             init_arc_angle = 315
             final_arc_angle = 585
         elif left_pressed:
-            pac_speed_x = -5
+            pac_speed_x = -10
             pac_speed_y = 0
             init_arc_angle = 225
             final_arc_angle = 495
         elif right_pressed:
-            pac_speed_x = 5
+            pac_speed_x = 10
             pac_speed_y = 0
             init_arc_angle = 45
             final_arc_angle = 315
@@ -229,8 +233,7 @@ def pac_object_detection(x, y):
 
 def draw_wall_tile(x, y):
     global tile_height, tile_width, texture
-    # arcade.draw_rectangle_filled(x, y, tile_width, tile_height, arcade.color.BLUE)
-    # texture = arcade.load_texture("pacific-blue-high-sheen-merola-tile-mosaic-tile-fyfl1spa-64_1000.jpg")
+    texture = arcade.load_texture("pacific-blue-high-sheen-merola-tile-mosaic-tile-fyfl1spa-64_1000.jpg")
     # display fire image on screen
     arcade.draw_texture_rectangle(x, y, tile_width, tile_height, texture, 0)
 
@@ -247,8 +250,9 @@ def draw_pacman_open(x, y):
 
 def draw_pellet(x, y):
     global pellet_rad
+    texture = arcade.load_texture("Gold_Coin_PNG_Clipart-663.png")
     # arcade.draw_circle_filled(x, y, pellet_rad, arcade.color.ORANGE_PEEL)
-
+    arcade.draw_texture_rectangle(x, y, pellet_rad, pellet_rad, texture, 0)
 
 def on_key_press(key, modifiers):
     global up_pressed, down_pressed, left_pressed, right_pressed
@@ -363,21 +367,12 @@ def setup():
                 pac_grid[row].append(0)
 
             # if not a wall tile, pellet tile
-            elif (1 <= column <= 29) and (1 <= row <= 13):
+            elif 6 <= row <= 8 and 14 <= column <= 16:
+                # append nothing
+                pac_grid[row].append(2)
+            elif  (1 <= column <= 29) and (1 <= row <= 13):
                 pac_grid[row].append(1)
 
-    # for row in range(row_count):
-    #     for column in range(column_count):
-    #         # calculate tile position
-    #         tile_centre_x = (column + 1) * tile_width - 20
-    #         tile_centre_y = (row + 1) * tile_height - 20
-    #         # check if wall
-    #         if pac_grid[row][column] == 0:
-    #             draw_wall_tile(tile_centre_x, tile_centre_y)
-    #         # check if pellet
-    #         elif pac_grid[row][column] == 1:
-    #             draw_pellet(tile_centre_x, tile_centre_y)
-    texture = arcade.load_texture("pacific-blue-high-sheen-merola-tile-mosaic-tile-fyfl1spa-64_1000.jpg")
 
     arcade.run()
 

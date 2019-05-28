@@ -38,7 +38,7 @@ def on_update(delta_time):
 
     wall_outer_side = pac_stop_perim()
 
-    pac_move(wall_outerside)
+    # pac_move(wall_outerside)
 
     # change pacman's outfit (open mouth to closed mouth and vice versa)
     time += delta_time
@@ -79,7 +79,7 @@ def pac_move():
             elif right_pressed:
                 pac_speed_y = 0
 
-        else:
+        # else:
             # check if pacman can still move in direction pressed
 
         if pac_stop[i]:
@@ -155,7 +155,7 @@ def pac_stop_perim():
     elif d_to_right <= pac_rad + perim_wall_height // 2:
         pac_stop[3] = True
 
-    for
+    # for
 
     # if touching, return values
     return pac_stop[current_wall_index]
