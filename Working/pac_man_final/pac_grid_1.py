@@ -39,12 +39,21 @@ time = 0
 #  score variables
 score = 0
 
+# ghost variables
+ghost_x1 = 420
+ghost_y1 = 260
+ghost_speeds = []
+
 
 def on_update(delta_time):
     global pac_x, pac_y, time, pac_speed_x, pac_speed_y
-    wall_touch = wall_collision(pac_x, pac_y)
-    pac_move(wall_touch)
+    wall_touch_pac = wall_collision(pac_x, pac_y)
+    pac_move(wall_touch_pac)
     pac_object_detection(pac_x, pac_y)
+
+    # control ghost 1 motion
+    wall_touch_ghost1 = wall_collision(ghost_x1, ghost_y1)
+    ghost_chase(wall_touch_ghost1, 1, delta_time)
 
     # open and close pac mans mouth
     time += delta_time
@@ -55,7 +64,7 @@ def on_update(delta_time):
 
 def on_draw():
     global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
-
+    global ghost_x1, ghost_y1
 
     arcade.start_render()
     draw_maze()
@@ -63,8 +72,18 @@ def on_draw():
     # draw pacman
     draw_pac(pac_x, pac_y)
 
+    # draw ghosts
+    draw_ghost(ghost_x1, ghost_y1)
+
     # draw the score
     write_score(score)
+
+
+def draw_ghost(x, y):
+    global tile_width, tile_height
+    texture = arcade.load_texture("Pac-Man-Ghost-PNG-Image.png")
+    arcade.draw_texture_rectangle(x, y, tile_width, tile_height, texture, 0)
+
 
 def draw_maze():
     global tile_width, tile_height, pac_grid, grid_draw, time
@@ -107,7 +126,7 @@ def draw_pac(x, y):
 
 def wall_collision(x, y):
     global tile_height, tile_width, pac_rad, pac_grid, row_count, column_count
-    # check if pacman is in the middle of a tile
+    # check if pacman/ghost is in the middle of a tile
     if x <= 600:
         check_x = (x + (tile_width//2)) % tile_width
     else:
@@ -147,6 +166,12 @@ def wall_collision(x, y):
     # not in mid tile
     else:
         return "null"
+
+
+def ghost_chase(wall_touch, ghost_number, time):
+    global ghost1_speed_x, ghost1_speed_y, ghost_speeds
+    if wall_touch != "null":
+
 
 
 def pac_move(wall_touch):
@@ -253,6 +278,7 @@ def draw_pellet(x, y):
     texture = arcade.load_texture("Gold_Coin_PNG_Clipart-663.png")
     # arcade.draw_circle_filled(x, y, pellet_rad, arcade.color.ORANGE_PEEL)
     arcade.draw_texture_rectangle(x, y, pellet_rad, pellet_rad, texture, 0)
+
 
 def on_key_press(key, modifiers):
     global up_pressed, down_pressed, left_pressed, right_pressed
