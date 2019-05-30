@@ -42,18 +42,17 @@ score = 0
 # ghost variables
 ghost_x1 = 420
 ghost_y1 = 260
-ghost_speeds = []
+ghost_speeds = [[0, 0]*3]
 
 
 def on_update(delta_time):
-    global pac_x, pac_y, time, pac_speed_x, pac_speed_y
+    global pac_x, pac_y, time, pac_speed_x, pac_speed_y, ghost_x1, ghost_y1
     wall_touch_pac = wall_collision(pac_x, pac_y)
     pac_move(wall_touch_pac)
     pac_object_detection(pac_x, pac_y)
 
-    # control ghost 1 motion
-    wall_touch_ghost1 = wall_collision(ghost_x1, ghost_y1)
-    ghost_chase(wall_touch_ghost1, 1, delta_time)
+    # control ghost 1 motion; super ghost can move through walls
+    ghost_chase1(ghost_x1, ghost_y1, pac_x, pac_y)
 
     # open and close pac mans mouth
     time += delta_time
@@ -168,10 +167,58 @@ def wall_collision(x, y):
         return "null"
 
 
-def ghost_chase(wall_touch, ghost_number, time):
-    global ghost1_speed_x, ghost1_speed_y, ghost_speeds
-    if wall_touch != "null":
+def ghost_chase1(ghostx, ghosty, pacx, pacy):
+    """ attract the ghost to pacman by calculating motion and slope
 
+    :param ghostx: ghost x position
+    :param ghosty: ghost y position
+    :param pacx: pac x position
+    :param pacy: pac y position
+    :return: nothing
+    """
+    global ghost_speeds, WIDTH, HEIGHT, ghost_x1, ghost_y1, tile_width, tile_height, pac_grid
+
+    # calculate distance_to_pac and slope
+    distance_to_pac = ((ghostx-pacx)**2 + (ghosty-pacy)**2) ** (1/2)
+    deltay = pacy - ghosty
+    deltax = pacx - ghostx
+
+    # check the closest column or row to ghost
+    current_row = round((ghosty / tile_width)) - 1
+    current_column = round((ghostx / tile_height)) - 1
+
+    # calculate scale proportional to distance_to_pac
+    if distance_to_pac <= 50:
+        ghost_x_change = deltax * 0.5
+        ghost_y_change = deltay * 0.5
+    elif distance_to_pac <= 100:
+        ghost_x_change = deltax * 0.08
+        ghost_y_change = deltay * 0.08
+    elif distance_to_pac <= 200:
+        ghost_x_change = deltax * 0.05
+        ghost_y_change = deltay * 0.05
+    elif distance_to_pac <= 400:
+        ghost_x_change = deltax * 0.02
+        ghost_y_change = deltay * 0.02
+    elif distance_to_pac <= 700:
+        ghost_x_change = deltax * 0.1
+        ghost_y_change = deltay * 0.1
+    else:
+        ghost_x_change = deltax * 0.004
+        ghost_y_change = deltay * 0.004
+    print(distance_to_pac)
+
+    # check if closest grid tile is a wall; if he is slow the ghost as he 'phases' through wall
+    if pac_grid[current_row][current_column] == 0:
+        ghost_x_change *= 0.65
+        ghost_y_change *= 0.65
+
+    ghost_speeds[0][0] = ghost_x_change
+    ghost_speeds[0][1] = ghost_y_change
+
+    # moove the ghost
+    ghost_x1 += ghost_speeds[0][0]
+    ghost_y1 += ghost_speeds[0][1]
 
 
 def pac_move(wall_touch):
