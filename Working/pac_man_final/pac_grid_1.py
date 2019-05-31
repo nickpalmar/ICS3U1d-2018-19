@@ -1,4 +1,6 @@
+# import libraries
 import arcade
+import random
 
 WIDTH = 1240
 HEIGHT = 680
@@ -42,6 +44,8 @@ score = 0
 # ghost variables
 ghost_x1 = 420
 ghost_y1 = 260
+ghost_x2 = 620
+ghost_y2 = 420
 ghost_speeds = [[0, 0]*3]
 
 
@@ -63,7 +67,7 @@ def on_update(delta_time):
 
 def on_draw():
     global pac_grid, row_count, column_count, tile_width, tile_height, pac_x ,pac_y, score
-    global ghost_x1, ghost_y1
+    global ghost_x1, ghost_y1, ghost_x1, ghost_y1
 
     arcade.start_render()
     draw_maze()
@@ -73,6 +77,7 @@ def on_draw():
 
     # draw ghosts
     draw_ghost(ghost_x1, ghost_y1)
+    draw_ghost(ghost_x2, ghost_y2)
 
     # draw the score
     write_score(score)
@@ -166,9 +171,10 @@ def wall_collision(x, y):
     else:
         return "null"
 
+def random_ghost(ghostx, ghosty, )
 
 def ghost_chase1(ghostx, ghosty, pacx, pacy):
-    """ attract the ghost to pacman by calculating motion and slope
+    """ attract the super ghost (ghost 1) ghost to pacman by calculating motion and slope
 
     :param ghostx: ghost x position
     :param ghosty: ghost y position
@@ -206,7 +212,6 @@ def ghost_chase1(ghostx, ghosty, pacx, pacy):
     else:
         ghost_x_change = deltax * 0.004
         ghost_y_change = deltay * 0.004
-    print(distance_to_pac)
 
     # check if closest grid tile is a wall; if he is slow the ghost as he 'phases' through wall
     if pac_grid[current_row][current_column] == 0:
@@ -406,7 +411,7 @@ def setup():
                 pac_grid[row].append(0)
             elif (row == 7 or row == 10 or row == 13) and column == 10:
                 pac_grid[row].append(0)
-            elif (2 <= row <= 3 or 6 <= row <= 8 or row == 10) and column == 11:
+            elif (2 <= row <= 3 or 7 <= row <= 8 or row == 10) and column == 11:
                 pac_grid[row].append(0)
             elif (row == 3 or 5 <= row <= 9 or row == 11 or row == 13) and column == 13:
                 pac_grid[row].append(0)
@@ -418,7 +423,7 @@ def setup():
                 pac_grid[row].append(0)
             elif (row == 1 or row == 3 or 5 <= row <= 9 or row == 11) and column == 17:
                 pac_grid[row].append(0)
-            elif (row == 4 or 6 <= row <= 8 or 11 <= row <= 12) and column == 19:
+            elif (row == 4 or 6 <= row <= 7 or 11 <= row <= 12) and column == 19:
                 pac_grid[row].append(0)
             elif (row == 1 or row == 4 or row == 7) and column == 20:
                 pac_grid[row].append(0)
